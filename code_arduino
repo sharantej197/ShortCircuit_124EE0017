@@ -1,0 +1,74 @@
+int LedG = 11;
+int LedY = 10;
+int LedR = 9;
+
+int StartButton = 12;
+int StopButton = 3;
+
+bool ledStateY=false;
+bool ledStateR = false;
+bool ledStateG=false;
+
+const long greenDuration = 1000;
+const long interval = 2000;
+unsigned long previousMillis =0;
+unsigned long greenMillis = 0;
+
+
+void setup() {
+    pinMode(LedG, OUTPUT);
+    pinMode(LedY, OUTPUT);
+    pinMode(LedR, OUTPUT);
+
+    pinMode(StartButton, INPUT);  
+    pinMode(StopButton, INPUT);
+
+   
+}
+
+void loop() {
+    static bool lastButtonState1 = LOW;
+    static bool lastButtonState2 = LOW;
+  
+    bool buttonState1 = digitalRead(StartButton);
+    bool buttonState2 = digitalRead(StopButton);
+    
+    if (lastButtonState1 == LOW && buttonState1 == HIGH) {  
+        ledStateR = true;
+        previousMillis = millis();
+        digitalWrite(LedR, HIGH);
+       
+    }
+  
+    if (ledStateR && millis() - previousMillis >= interval) {
+        ledStateR = false;
+        digitalWrite(LedR, LOW);
+       
+      ledStateY=true;
+      digitalWrite( LedY,HIGH);
+    }
+   if (lastButtonState2 == LOW && buttonState2 == HIGH) {
+        if (ledStateY) {
+            //this will Turn OFF the Yellow LED
+            ledStateY = false;
+            digitalWrite(LedY, LOW);
+
+            //This will Turn ON the Green LED immediately
+            ledStateG = true;
+            digitalWrite(LedG, HIGH);
+            greenMillis = millis(); // Start timer for Green LED
+        }
+    }
+
+    //This will Turn OFF the Green LED after 2 seconds
+    if (ledStateG && millis() - greenMillis >= greenDuration) {
+        ledStateG = false;
+        digitalWrite(LedG, LOW);
+    }
+
+    lastButtonState1 = buttonState1;
+    lastButtonState2 = buttonState2;
+}
+
+  
+  
